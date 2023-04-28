@@ -3,9 +3,9 @@ from random import randrange
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 
-from config import acces_token, comunity_token
+from config import acces_token, comunity_token, DNS
 from core import VkTools
-from db import create_tables, drop_tables
+from db import create_tables, drop_tables, Engine
 
 
 class BotInterface:
@@ -44,6 +44,7 @@ class BotInterface:
                 request = event.text #полученый текст от пользователя в чате
 
                 self.tools = VkTools(acces_token)
+                self.db_tools = Engine(DNS)
 
                 if context == 'one':
                     if request.lower() == "привет":
@@ -52,11 +53,11 @@ class BotInterface:
                         sex = self.tools.get_sex_for_search(event.user_id)  # вычислить противоположный пол
                         city_id = self.tools.get_city_id(event.user_id)  # id города для поиска
                         self.message_send(event.user_id,
-                                          f"Привет, {info[0]['first_name']}!  Я чат-бот VKinder\n"
-                                          f"Я могу осуществить поиск подходящей пары для тебя\n"
-                                          f"Критерии: город, возраст в промежутке +/- 3 года от твоего возраста\n"
-                                          f"Для начала поиска введите: поиск\n"
-                                          )
+                                        f"Привет, {info[0]['first_name']}!  Я чат-бот VKinder\n"
+                                        f"Я могу осуществить поиск подходящей пары для тебя\n"
+                                        f"Критерии: город, возраст в промежутке +/- 3 года от твоего возраста\n"
+                                        f"Для начала поиска введите: поиск\n"
+                                         )
 
                     elif request.lower() == "поиск":
                         if city_id == 0 or age == 0 or sex == 0:
@@ -72,8 +73,8 @@ class BotInterface:
                                         context = 'add_sex'
                                         self.message_send(event.user_id,'Введите дополнительную информацию для поиска - пол(м/ж):')
                         else:
-                            age_from = age - 3
-                            age_to = age + 3
+                            age_from = int(age) - 3
+                            age_to = int(age) + 3
                             profiles = self.tools.user_search(city_id,age_from,age_to,sex,6,offset=0) #получили список пользователей подходящих по поиску
                             self.print_profiles(event.user_id, profiles)
 
