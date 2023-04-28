@@ -1,6 +1,7 @@
 import sqlalchemy as sq
 from sqlalchemy.orm import declarative_base, relationship
 
+# Схема ДБ
 Base = declarative_base()
 
 
@@ -11,7 +12,7 @@ class Viewed(Base):
     worksheet_id = sq.Column(sq.Integer, unique=True)
 
     def __str__(self):
-        return f'{self.profile_id}'
+        return f'{self.profile_id}:{self.worksheet_id}'
         # return f'{self.worksheet_id}'
 
 
