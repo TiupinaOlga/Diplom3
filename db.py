@@ -2,7 +2,7 @@ import sqlalchemy as sq
 from sqlalchemy.orm import sessionmaker
 from config import DNS
 from models import Viewed, drop_tables, create_tables
-import random
+# import random
 
 
 def insert_db(engine, profile_id, worksheet_id):

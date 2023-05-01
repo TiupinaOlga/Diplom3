@@ -5,7 +5,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 
 from config import acces_token, comunity_token, DNS
 from core import VkTools
-from db import create_tables, drop_tables, DB_tools
+from db import create_tables, DB_tools, get_worksheet, insert_db
 
 
 class BotInterface:
@@ -59,6 +59,7 @@ class BotInterface:
 
                 self.tools = VkTools(acces_token)
                 self.db_tools = DB_tools(DNS)
+                create_tables(self.db_tools.engine)
 
                 if context == 'one':
                     if request.lower() == "привет":
@@ -93,8 +94,10 @@ class BotInterface:
                             profiles = self.tools.user_search(city_id,age_from,age_to,sex,6,offset=offset) #получили список пользователей подходящих по поиску
                             if profiles:
                                 profile = profiles.pop(0)
-                                self.print_profile(event.user_id, profile)
-                                self.message_send(event.user_id,'Для продолжения напишите Далее')
+                                if not get_worksheet(self.db_tools.engine, profile['id']):
+                                    self.print_profile(event.user_id, profile)
+                                    insert_db(self.db_tools.engine,None, profile['id'])
+                                    self.message_send(event.user_id,'Для продолжения напишите Далее')
                             else:
                                 self.message_send(event.user_id, 'Анкет для заданных условий не найденно')
 
