@@ -1,7 +1,9 @@
 import sqlalchemy as sq
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base
+from sqlalchemy import MetaData
 
 # Схема ДБ
+metadata = MetaData()
 Base = declarative_base()
 
 
@@ -12,8 +14,8 @@ class Viewed(Base):
     worksheet_id = sq.Column(sq.Integer, unique=True)
 
     def __str__(self):
-        return f'{self.profile_id}:{self.worksheet_id}'
-        # return f'{self.worksheet_id}'
+        # return f'{self.profile_id}:{self.worksheet_id}'
+        return f'{self.worksheet_id}'
 
 
 def drop_tables(engine):
