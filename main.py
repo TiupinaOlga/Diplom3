@@ -91,13 +91,15 @@ class BotInterface:
                             age_from = int(age) - 3
                             age_to = int(age) + 3
                             offset = 0
-                            profiles = self.tools.user_search(city_id,age_from,age_to,sex,6,offset=offset) #получили список пользователей подходящих по поиску
+                            profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset) #получили список пользователей подходящих по поиску
                             if profiles:
                                 profile = profiles.pop(0)
                                 if not get_worksheet(self.db_tools.engine, profile['id']):
                                     self.print_profile(event.user_id, profile)
-                                    insert_db(self.db_tools.engine,None, profile['id'])
-                                    self.message_send(event.user_id,'Для продолжения напишите Далее')
+                                    insert_db(self.db_tools.engine, None, profile['id'])
+                                    self.message_send(event.user_id, 'Для продолжения напишите Далее')
+                                else:
+                                    pass #написать функцию перебора списка, пока не попадется тот пользователь, которого нет в бд
                             else:
                                 self.message_send(event.user_id, 'Анкет для заданных условий не найденно')
 
@@ -108,6 +110,7 @@ class BotInterface:
                                 self.print_profile(event.user_id, profile)
                                 insert_db(self.db_tools.engine, None, profile['id'])
                                 self.message_send(event.user_id, 'Для продолжения напишите Далее')
+
                         else:
                             offset = offset + 5
                             profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset)
