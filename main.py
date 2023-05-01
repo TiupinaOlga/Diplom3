@@ -104,8 +104,10 @@ class BotInterface:
                     elif request.lower() == "далее":
                         if profiles:
                             profile = profiles.pop(0)
-                            self.print_profile(event.user_id, profile)
-                            self.message_send(event.user_id, 'Для продолжения напишите Далее')
+                            if not get_worksheet(self.db_tools.engine, profile['id']):
+                                self.print_profile(event.user_id, profile)
+                                insert_db(self.db_tools.engine, None, profile['id'])
+                                self.message_send(event.user_id, 'Для продолжения напишите Далее')
                         else:
                             offset = offset + 5
                             profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset)
