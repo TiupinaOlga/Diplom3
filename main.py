@@ -57,7 +57,7 @@ class BotInterface:
                                         f"Я могу осуществить поиск подходящей пары для тебя\n"
                                         f"Критерии: город, возраст в промежутке +/- 3 года от твоего возраста\n"
                                         f"Для начала поиска введите: поиск\n"
-                                         )
+                                        )
 
                     elif request.lower() == "поиск":
                         if city_id == 0 or age == 0 or sex == 0:
@@ -76,6 +76,7 @@ class BotInterface:
                             age_from = int(age) - 3
                             age_to = int(age) + 3
                             profiles = self.tools.user_search(city_id,age_from,age_to,sex,6,offset=0) #получили список пользователей подходящих по поиску
+
                             self.print_profiles(event.user_id, profiles)
 
                     elif request.lower() == "далее":
