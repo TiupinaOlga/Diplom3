@@ -31,7 +31,7 @@ class VkTools():
                                         'age_from':age_from,
                                         'age_to':age_to,
                                         'sex':sex,
-                                        'count':30,
+                                        'count':5,
                                         'offset':offset,
                                         'status':status
                                         }
@@ -205,3 +205,7 @@ if __name__ == '__main__':
     # photos = tools.photos_get(382074370)
     #
     # tools.photo_sort(photos)
+
+    print(profiles)
+    print(profiles.pop(0))
+    print(profiles)

@@ -5,7 +5,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 
 from config import acces_token, comunity_token, DNS
 from core import VkTools
-from db import create_tables, drop_tables, Engine
+from db import create_tables, drop_tables, DB_tools
 
 
 class BotInterface:
@@ -21,9 +21,23 @@ class BotInterface:
                    'attachment': attachment,#медиавложения
                    'random_id': randrange(10 ** 7)},)
 
+    """Функция для отправки профиля найденного пользователя"""
+    def print_profile(self, user_id, profile):
+
+        # print(profile)
+        # print(profiles)
+        profile_id = f"@id{profile['id']}({profile['name']})" #ссылка на профиль
+        photos = self.tools.photos_get(profile['id']) #получение списка фото у пользователя
+        if photos:
+            for photo in photos:
+                media = photo['media']
+                self.message_send(user_id, f'{profile_id}', media)
+        else:
+            self.message_send(user_id, f'{profile_id} у данного пользователя нет фото')
+
     """Функция для отправки профилей найденных пользователей"""
     def print_profiles(self, user_id, profiles):
-        for profile in profiles:
+       for profile in profiles:
             profile_id = f"@id{profile['id']}({profile['name']})" #ссылка на профиль
             photos = self.tools.photos_get(profile['id']) #получение списка фото у пользователя
             if photos:
@@ -44,7 +58,7 @@ class BotInterface:
                 request = event.text #полученый текст от пользователя в чате
 
                 self.tools = VkTools(acces_token)
-                self.db_tools = Engine(DNS)
+                self.db_tools = DB_tools(DNS)
 
                 if context == 'one':
                     if request.lower() == "привет":
@@ -75,12 +89,28 @@ class BotInterface:
                         else:
                             age_from = int(age) - 3
                             age_to = int(age) + 3
-                            profiles = self.tools.user_search(city_id,age_from,age_to,sex,6,offset=0) #получили список пользователей подходящих по поиску
-
-                            self.print_profiles(event.user_id, profiles)
+                            offset = 0
+                            profiles = self.tools.user_search(city_id,age_from,age_to,sex,6,offset=offset) #получили список пользователей подходящих по поиску
+                            if profiles:
+                                profile = profiles.pop(0)
+                                self.print_profile(event.user_id, profile)
+                                self.message_send(event.user_id,'Для продолжения напишите Далее')
+                            else:
+                                self.message_send(event.user_id, 'Анкет для заданных условий не найденно')
 
                     elif request.lower() == "далее":
-                        pass
+                        if profiles:
+                            profile = profiles.pop(0)
+                            self.print_profile(event.user_id, profile)
+                            self.message_send(event.user_id, 'Для продолжения напишите Далее')
+                        else:
+                            offset = offset + 5
+                            profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset)
+                            if profiles:
+                                self.print_profile(event.user_id, profile)
+                                self.message_send(event.user_id, 'Для продолжения напишите Далее')
+                            else:
+                                self.message_send(event.user_id, 'Анкеты для просмотра заклнчились! Пока!')
 
                     elif request.lower() == "пока":
                         self.message_send(event.user_id, "Спасибо за использование чат-бота. Пока!")

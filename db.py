@@ -2,6 +2,7 @@ import sqlalchemy as sq
 from sqlalchemy.orm import sessionmaker
 from config import DNS
 from models import Viewed, drop_tables, create_tables
+import random
 
 
 def insert_db(engine, profile_id, worksheet_id):
@@ -19,13 +20,12 @@ def get_worksheet(engine, worksheet_id):
     with Session() as session:
         query_pub = session.query(Viewed).filter(Viewed.worksheet_id == worksheet_id).all()
         # for q in query_pub:
-            # print(q)
-            # return print(q)
+        # print(q)
+        # return print(q)
         if query_pub:
             return True
         else:
             return False
-
 
 
 def exists_table(engine):
@@ -54,3 +54,5 @@ if __name__ == '__main__':
     #     print('таблица существует')
     # else:
     #     print('таблица не найдна')
+
+
