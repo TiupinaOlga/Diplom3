@@ -45,17 +45,17 @@ class BotInterface:
         else:
             self.message_send(user_id, f'{profile_id} у данного пользователя нет фото')
 
-    """Функция для отправки профилей найденных пользователей"""
-    def print_profiles(self, user_id, profiles):
-       for profile in profiles:
-            profile_id = f"@id{profile['id']}({profile['name']})" #ссылка на профиль
-            photos = self.tools.photos_get(profile['id']) #получение списка фото у пользователя
-            if photos:
-                for photo in photos:
-                    media = photo['media']
-                    self.message_send(user_id, f'{profile_id}', media)
-            else:
-                self.message_send(user_id, f'{profile_id} у данного пользователя нет фото')
+    # """Функция для отправки профилей найденных пользователей"""
+    # def print_profiles(self, user_id, profiles):
+    #    for profile in profiles:
+    #         profile_id = f"@id{profile['id']}({profile['name']})" #ссылка на профиль
+    #         photos = self.tools.photos_get(profile['id']) #получение списка фото у пользователя
+    #         if photos:
+    #             for photo in photos:
+    #                 media = photo['media']
+    #                 self.message_send(user_id, f'{profile_id}', media)
+    #         else:
+    #             self.message_send(user_id, f'{profile_id} у данного пользователя нет фото')
 
     """Функция для обработки действий пользователя"""
     def handler(self):
