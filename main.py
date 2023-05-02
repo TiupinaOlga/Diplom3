@@ -107,7 +107,7 @@ class BotInterface:
                             if profiles: #если нашлись анкеты по заданному условию, то
                                 profiles = self.check_profile(profiles=profiles)  # проверили на наличие анкет в бд, если все анкеты уже есть в бд, то получаем пустой список
                                 while not profiles: #пока список пустой, повторяем поиск со смещением и сравниваем с бд
-                                    offset = offset + 5
+                                    offset = offset + 50
                                     profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset) #поиск
                                     if profiles: #если нашлись анкеты
                                         profiles = self.check_profile(profiles) #проверка, если пустой, то повторяем цикл
@@ -123,16 +123,34 @@ class BotInterface:
                                 self.message_send(event.user_id, 'Анкет для заданных условий не найденно. Пока!')
 
                     elif request.lower() == "далее":
-                        if profiles:
-                            profiles = self.check_profile(profiles=profiles)
-                            while not profiles:
-                                offset = offset + 5
-                                profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset)
-                                profiles = self.check_profile(profiles)
-                            profile = profiles.pop(0)
+                        if profiles:  # если нашлись анкеты по заданному условию, то
+                            profiles = self.check_profile(
+                                profiles=profiles)  # проверили на наличие анкет в бд, если все анкеты уже есть в бд, то получаем пустой список
+                            while not profiles:  # пока список пустой, повторяем поиск со смещением и сравниваем с бд
+                                offset = offset + 50
+                                profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6,
+                                                                  offset=offset)  # поиск
+                                if profiles:  # если нашлись анкеты
+                                    profiles = self.check_profile(profiles)  # проверка, если пустой, то повторяем цикл
+                                else:
+                                    self.message_send(event.user_id, 'Анкет не найдено! Пока!')
+
+                            profile = profiles.pop(
+                                0)  # выход из цикла, на первом месте должна быть анкета, которая еще не добавлена в бд, берем данные и удаляем ее из списка
                             self.print_profile(event.user_id, profile)
                             insert_db(self.db_tools.engine, None, profile['id'])
                             self.message_send(event.user_id, 'Для продолжения напишите Далее')
+
+                        # if profiles:
+                        #     profiles = self.check_profile(profiles=profiles)
+                        #     while not profiles:
+                        #         offset = offset + 5
+                        #         profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset)
+                        #         profiles = self.check_profile(profiles)
+                        #     profile = profiles.pop(0)
+                        #     self.print_profile(event.user_id, profile)
+                        #     insert_db(self.db_tools.engine, None, profile['id'])
+                        #     self.message_send(event.user_id, 'Для продолжения напишите Далее')
                         # if profiles:
                         #     profile = profiles.pop(0)
                         #     if not get_worksheet(self.db_tools.engine, profile['id']):
@@ -153,7 +171,7 @@ class BotInterface:
                         self.message_send(event.user_id, "Спасибо за использование чат-бота. Пока!")
 
                     else:
-                        self.message_send(event.user_id, "Не поняла вашего ответа...")
+                        self.message_send(event.user_id, "Не поняла вашего ответа... Для начала работы с ботом напишите Привет")
 
                 elif context == 'city_add':
                     city_name = request.lower()
