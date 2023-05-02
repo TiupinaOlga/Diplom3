@@ -7,8 +7,8 @@ from datetime import date
 
 from operator import itemgetter #для сортировки словаря
 
-from db import create_tables, DB_tools, get_worksheet, insert_db
-from config import DNS
+# from db import create_tables, DB_tools, get_worksheet, insert_db
+# from config import DNS
 
 class VkTools():
     def __init__(self, token):
