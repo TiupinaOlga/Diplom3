@@ -7,6 +7,9 @@ from datetime import date
 
 from operator import itemgetter #для сортировки словаря
 
+from db import create_tables, DB_tools, get_worksheet, insert_db
+from config import DNS
+
 class VkTools():
     def __init__(self, token):
         self.ext_api = vk_api.VkApi(token=token)
@@ -136,12 +139,22 @@ class VkTools():
         else:
             return 0
 
+    def check_profile(self, profiles):
+        for profile in profiles:
+            worksheet_id = profile['id']
+            if get_worksheet(db_tools.engine, worksheet_id=worksheet_id): #если есть в бд
+                del profiles[0]
+            else: #если нет в бд
+                return profiles
+
 
 if __name__ == '__main__':
     tools = VkTools(acces_token) #объект класса VkTools
     info = tools.get_profile_info('4584140') #сюда передать id человека из чата, он ищет пару
-    profiles = tools.user_search(338, 20, 25, 1, 6)
+    profiles = tools.user_search(338, 33, 39, 0, 6)
     photos = tools.photos_get(97399357)
+
+    db_tools = DB_tools(DNS)
 
     if info:
         # print(info)
@@ -161,6 +174,12 @@ if __name__ == '__main__':
     # if profiles: #список словарей
     #     for profile in profiles:
     #         print(profile)
+
+
+    # print(profiles)
+    #
+    # profiles = tools.check_profile(profiles)
+    # print(profiles)
 
 
 
@@ -206,6 +225,6 @@ if __name__ == '__main__':
     #
     # tools.photo_sort(photos)
 
-    print(profiles)
-    print(profiles.pop(0))
-    print(profiles)
+    # print(profiles)
+    # print(profiles.pop(0))
+    # print(profiles)

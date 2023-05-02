@@ -13,6 +13,16 @@ class BotInterface:
     def __init__(self,token):
         self.bot = vk_api.VkApi(token=token)
 
+    """Функция для проверки анкеты в бд"""
+    def check_profile(self, profiles):
+        for profile in profiles:
+            worksheet_id = profile['id']
+            if get_worksheet(self.db_tools.engine, worksheet_id=worksheet_id): #если есть в бд
+                del profiles[0]
+            else: #если нет в бд
+                return profiles
+
+
     """Функция для отправки сообщения пользователю"""
     def message_send(self, user_id, message, attachment=None):
         self.bot.method('messages.send',
@@ -92,6 +102,7 @@ class BotInterface:
                             age_to = int(age) + 3
                             offset = 0
                             profiles = self.tools.user_search(city_id, age_from, age_to, sex, 6, offset=offset) #получили список пользователей подходящих по поиску
+                            profiles = []
                             if profiles:
                                 profile = profiles.pop(0)
                                 if not get_worksheet(self.db_tools.engine, profile['id']):
